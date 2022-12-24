@@ -10,6 +10,12 @@ Instalar o NPM e o NodeJS
 Versão NPM -> 9.2.0 ou mais atual
 Versão NodeJS -> 16.15.0 ou mais atual
 ```
+Criar um arquivo .env na raiz do projeto. \
+Existem 2 parametros para serem criados:
+```
+JWT_SECRET
+API_URL
+```
 
 ## Como Rodar
 

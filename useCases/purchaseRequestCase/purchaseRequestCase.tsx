@@ -1,9 +1,9 @@
 import { Pagination } from "@/useComponents/Pagination"
 import { Table } from "@/useComponents/Table"
 import { useEffect, useState } from "react"
-import { getPurchaseRequests } from "@/services/purchase-order/usePurchaseOrder"
+import { getPurchaseRequests } from "@/services/purchase-request/usePurchaseRequest"
 
-export const PurchaseOrderCase = () => {
+export const PurchaseRequestCase = () => {
 
   const headers = [
     {

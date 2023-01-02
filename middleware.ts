@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export default function middleware(req: NextRequest) {
-  const cookie = req?.cookies.get('@ipog:accessToken')
+  const cookie = req?.cookies.get('B1SESSION')
   const { pathname } = req.nextUrl
 
   if (!cookie && pathname !== '/auth') {
@@ -12,5 +12,5 @@ export default function middleware(req: NextRequest) {
   return NextResponse.next()
 }
 export const config = {
-  matcher: ['/purchase-order/:path*'],
+  matcher: ['/purchase-request/:path*'],
 }

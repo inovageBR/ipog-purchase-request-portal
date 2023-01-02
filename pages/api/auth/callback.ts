@@ -12,8 +12,9 @@ export default async function handler(
   const session: SessionAndToken = await getSession({ req })
 
   if (session?.accessToken) {
-    setCookie({ res }, '@ipog:accessToken', session.accessToken, {
+    setCookie({ res }, 'B1SESSION', session.accessToken, {
       path: '/',
+      httpOnly: true,
     })
   }
 

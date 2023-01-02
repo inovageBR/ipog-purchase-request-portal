@@ -1,9 +1,9 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import DefaultLayout from '@/layouts/DefaultLayout'
-import { PurchaseOrderCase } from '@/useCases/purchaseOrderCase'
+import { PurchaseRequestCase } from '@/useCases/purchaseRequestCase'
 
-const PurchaseOrder: NextPage = () => {
+const PurchaseRequest: NextPage = () => {
   return (
     <>
     
@@ -13,11 +13,11 @@ const PurchaseOrder: NextPage = () => {
       </Head>
       <DefaultLayout title='default layout'>
           <div className='h-screen p-8'>
-            <PurchaseOrderCase />
+            <PurchaseRequestCase />
           </div>
       </DefaultLayout> 
     </>
   )
 }
 
-export default PurchaseOrder
+export default PurchaseRequest

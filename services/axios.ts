@@ -1,21 +1,18 @@
 import https from 'https'
-
-if (process.env.NODE_ENV === 'development') {
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-  })
-  axios.defaults.httpsAgent = httpsAgent
-}
-
-type headerCookie = {
-  Cookie: string
-}
-
 import axios, {
   AxiosRequestConfig,
   AxiosRequestHeaders,
   AxiosResponse,
 } from 'axios'
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+})
+axios.defaults.httpsAgent = httpsAgent
+
+type headerCookie = {
+  Cookie: string
+}
 
 type FetchParams = {
   url?: string
@@ -29,6 +26,8 @@ type FetchParams = {
   withCredentials?: boolean
 }
 
+export const axiosInstance = axios.create()
+
 export function fetch({
   headers,
   method = 'GET',
@@ -37,11 +36,12 @@ export function fetch({
   path,
   ...data
 }: FetchParams): Promise<AxiosResponse> {
-  const axiosInstance = axios.create()
 
   return axiosInstance({
     ...data,
-    headers,
+    headers: {
+      Cookie: headers?.Cookie,
+    },
     withCredentials,
     method,
     baseURL: url,

@@ -24,9 +24,8 @@ export default function handler(
       data: {
         UserName: user,
         Password: pass,
-        CompanyDB: 'SBOIPOGTESTE',
+        CompanyDB: `${process.env.API_COMPANY_DB || ''}`,
         Language: 29
-
       },
     })
 

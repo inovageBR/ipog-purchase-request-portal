@@ -25,7 +25,7 @@ export default NextAuth({
 
         const response = await fetch({
           method: 'POST',
-          path: 'http://localhost:3000/api/login',
+          path: `${process.env.BACKEND_HOST}/api/login`,
           data: {
             user,
             pass,

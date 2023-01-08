@@ -19,7 +19,10 @@ API_URL
 
 ## Como Rodar
 
-Após baixar o projeto e instalar as dependencias \
+Após baixar o projeto e instalar as dependencias 
+```
+npm install
+```
 Para executar use:
 ```
 npm run dev

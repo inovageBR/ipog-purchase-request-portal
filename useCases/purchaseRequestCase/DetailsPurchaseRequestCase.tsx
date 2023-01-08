@@ -153,10 +153,10 @@ export const DetailsPurchaseRequestCase = () => {
                 {itemsRequest.Quantity}
               </td>
               <td className="p-3 text-left">
-                {itemsRequest.Price}
+                {itemsRequest.CostingCode}
               </td>
               <td className="p-3 text-left">
-                {itemsRequest.PriceAfterVAT}
+                {itemsRequest.CostingCode2}
               </td>
               <td className="p-3 text-left">
                 {itemsRequest.ProjectCode}

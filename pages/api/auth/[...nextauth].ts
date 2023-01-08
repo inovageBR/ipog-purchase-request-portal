@@ -70,7 +70,7 @@ export default NextAuth({
     },
     async redirect({baseUrl}: any) {
 
-      return `${baseUrl}/api/auth/callback`
+      return `/api/auth/callback`
     },
   },
 });

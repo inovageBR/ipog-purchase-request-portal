@@ -24,10 +24,11 @@ BACKEND_HOST
 Após baixar o projeto e instalar as dependencias 
 ```
 npm install
+npm run build
 ```
 Para executar use:
 ```
-npm run dev
+npm run start
 ```
 Pode testar abrindo localhost:3000
 

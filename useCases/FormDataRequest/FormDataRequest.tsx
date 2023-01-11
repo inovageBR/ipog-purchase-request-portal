@@ -5,6 +5,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { getAffiliate, getEmployees, getDepartments } from "@/services/purchase-request/usePurchaseRequest"
 import { useStoreListToast } from "@/store/useStoreListToast"
 import { useNoAuthorized } from "@/hooks/useNoAuthorized"
+import { useStoreLoading } from "@/store/useStoreLoading"
 
 export type FormDataRequestProps = {
   emitDataRequest: (data: any) => void
@@ -13,7 +14,7 @@ export type FormDataRequestProps = {
 
 export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
   const { addToast } = useStoreListToast()
-
+  const { setLoading, store } = useStoreLoading()
   
   const [taxDate, setTaxDate] = useState('')
   const [docDueDate, setDocDueDate] = useState('')
@@ -33,7 +34,7 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
     const date = new Date()
     const nowDate = date.toISOString().split('T')[0]
     
-    const dateDue= date.setDate(date.getDate() + 30)
+    const dateDue= date.setMonth(date.getMonth() + 1)
     const dateDueFormat = new Date(dateDue).toISOString().split('T')[0]
     
     setTaxDate(nowDate)
@@ -45,6 +46,7 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
 
   const GET_DEPARTMENT = (id: any) => {
     getDepartments(id).then((response) => {
+      setLoading(true)
       const { data } = response
       const department = 
         {
@@ -67,11 +69,14 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
       })
 
       useNoAuthorized(responseStatus)
+    }).finally(() => {
+      setLoading(false)
     })
   }
 
   const GET_EMPLOYEES = () => {
     getEmployees().then((response) => {
+      setLoading(true)
       const { data } = response
       const employees = data.value.map((employee: any) => {
         return {
@@ -98,11 +103,14 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
       })
 
       useNoAuthorized(responseStatus)
+    }).finally(() => {
+      setLoading(false)
     })
   }
 
   const GET_AFFILIATE = () => {
     getAffiliate().then((response) => {
+      setLoading(true)
       const { data } = response
       const affiliates = data.value.map((affiliate: any) => {
         return {
@@ -128,6 +136,8 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
       })
 
       useNoAuthorized(responseStatus)
+    }).finally(() => {
+      setLoading(false)
     })
   }
 
@@ -174,6 +184,8 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
   }
 
   const handlerRequriedDate = (event: any) => {
+
+    console.log(event.target.value, 'VALUE')
     setDocumentData({
       ...documentData,
       RequiredDate: event.target.value
@@ -208,8 +220,19 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
 
   useEffect(() => {
     emitDataRequest(documentData)
-    console.log(documentData, 'OBJETO EMITIDO')
   }, [documentData])
+
+  useEffect(() => {
+    setDocumentData({
+      ...documentData,
+      DocDate: docDate,
+      DocDueDate: docDueDate,
+      TaxDate: taxDate,
+      RequriedDate: requriedDate
+    })
+
+    console.log(documentData)
+  }, [docDate, docDueDate, taxDate, requriedDate])
 
   useEffect(() => {
     setDateNow()
@@ -227,7 +250,7 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
           <div className="flex items-center gap-4">
             <SelectInput label="Solicitante" name={'requesterName'} options={employees} onChange={(ev) => handlerEmployees(ev)}  />
             <InputText label="Departamento" name={'requesterDepertment'} value={department.label} readOnly />
-            <SelectInput label="Filial" name={'affiliate'} options={affiliates} onChange={(ev) => handlerAffiliates(ev)} />
+            <SelectInput label="Filial" name={'affiliate'} className="w-144" options={affiliates} onChange={(ev) => handlerAffiliates(ev)} />
           </div>
           <div className="flex items-center gap-4">
             <InputDate label="Data de Lançamento" name={'TaxDate'} value={taxDate} onChange={(ev) => handlerTaxDate(ev)} />
@@ -235,7 +258,7 @@ export const FormDataRequest = ({emitDataRequest}:FormDataRequestProps) => {
             <InputDate label="Data do Documento" name={'DocDate'}  value={docDate}  onChange={(ev) => handlerDocDate(ev)}  />
           </div>
           <div className="flex items-center gap-4">
-          <InputDate label="Data Necessaria" name={'RequriedDate'} defaultValue={requriedDate} onChange={(ev) => handlerRequriedDate(ev)}  />
+          <InputDate label="Data Necessaria" name={'RequriedDate'} value={requriedDate} onChange={(ev) => handlerRequriedDate(ev)}  />
           </div>
           <div className="flex items-center gap-4">
           <InputText label="Observações" name={'Comments'} defaultValue={''} onChange={(ev) => handlerComments(ev)} />

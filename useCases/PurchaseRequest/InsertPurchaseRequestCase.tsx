@@ -7,6 +7,7 @@ import { Button } from "@/usePieces/Button"
 import { postPurchaseRequests } from "@/services/purchase-request/usePurchaseRequest"
 import { useStoreListToast } from "@/store/useStoreListToast"
 import { useStoreLoading } from "@/store/useStoreLoading"
+import { ButtonIcon } from "@/usePieces/ButtonIcon"
 
 export const InsertPurchaseRequestCase = () => {
 
@@ -41,10 +42,12 @@ export const InsertPurchaseRequestCase = () => {
         })
       }
 
-    }).catch((err) => {
+    }).catch((error) => {
+      const { status: responseStatus, data } = error.response
+
       addToast({
-        title: 'Erro',
-        message: 'Erro ao inserir solicitação de compra',
+        title: `Erro ${responseStatus} `,
+        message: `Erro ao inserir solicitação de compra ${data?.error.message}`,
         duration: 8000,
         type: 'error'
       })
@@ -70,16 +73,20 @@ export const InsertPurchaseRequestCase = () => {
       title: 'Quantidade',
       fn: () => console.log('Quantidade')
     },
-    // {
-    //   title: 'Centro de Custo 1',
-    //   fn: () => console.log('Cancelado')
-    // },
-    // {
-    //   title: 'Centro de Custo 2',
-    //   fn: () => console.log('Cancelado')
-    // },
+    {
+      title: 'Centro de Custo 1',
+      fn: () => console.log('Cancelado')
+    },
+    {
+      title: 'Centro de Custo 2',
+      fn: () => console.log('Cancelado')
+    },
     {
       title: 'Projeto',
+      fn: () => console.log('Projeto')
+    },
+    {
+      title: 'Ação',
       fn: () => console.log('Projeto')
     },
   ]
@@ -120,6 +127,25 @@ export const InsertPurchaseRequestCase = () => {
     POST_PURCHASE_REQUEST(data)
   }
 
+  // const handlerRemoveItem = (index: number) => {
+  //   console.log(index)
+  //   itemsRequest.splice(index, 1)
+  //   console.log(itemsRequest)
+  //   setItemsRequest(itemsRequest)
+  // }
+
+  const handlerRemoveItemTable = (index: any) => {
+    const items = itemsRequest.filter((item: any, i: any) => i !== index)
+    setItemsRequest(items)
+
+    const itemsRequestData = dataRequest.DocumentLines.filter((item: any, i: any) => i !== index)
+    setDataRequest({
+      ...dataRequest,
+      DocumentLines: itemsRequestData
+    })
+  } 
+
+
   return (
     <>
       <FormDataRequest  emitDataRequest={handlerDataRequest}/>
@@ -139,14 +165,17 @@ export const InsertPurchaseRequestCase = () => {
             <td className="p-3 text-left">
               {itemsRequest.Quantity}
             </td>
-            {/* <td className="p-3 text-left">
+            <td className="p-3 text-left">
               {itemsRequest.CostingCode}
             </td>
             <td className="p-3 text-left">
               {itemsRequest.CostingCode2}
-            </td> */}
+            </td>
             <td className="p-3 text-left">
               {itemsRequest.ProjectCode}
+            </td>
+            <td className="p-3 text-left">
+              <ButtonIcon icon="ic:baseline-remove-circle" onClick={() => handlerRemoveItemTable(index)} />
             </td>
           </tr>
         ), []): null}

@@ -1,13 +1,16 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { fetch } from '@/services/axios';
+import getPublicRuntimeConfig from 'next/config'
+
 
 type credentialsProps = {
   user: string;
   pass: string;
 };
+
+
+const { publicRuntimeConfig } = getPublicRuntimeConfig()
 
 export default NextAuth({
   providers: [
@@ -25,7 +28,7 @@ export default NextAuth({
 
         const response = await fetch({
           method: 'POST',
-          path: `${process.env.BACKEND_HOST}/api/login`,
+          path: `${publicRuntimeConfig.NEXTAUTH_URL}/api/login`,
           data: {
             user,
             pass,
@@ -70,7 +73,7 @@ export default NextAuth({
     },
     async redirect({baseUrl}: any) {
 
-      return `/api/auth/callback`
+      return `${baseUrl}/api/auth/callback`
     },
   },
 });

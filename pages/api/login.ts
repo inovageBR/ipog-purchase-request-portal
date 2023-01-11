@@ -14,7 +14,7 @@ export default function handler(
   res: NextApiResponse
 ) {
 
-  const useFetch = async () => {
+  const LoginFetch = async () => {
     
     const { user, pass } = req.body
 
@@ -24,8 +24,9 @@ export default function handler(
       data: {
         UserName: user,
         Password: pass,
-        CompanyDB: `${process.env.API_COMPANY_DB || ''}`,
+        CompanyDB: 'SBOIPOGTESTE',
         Language: 29
+
       },
     })
 
@@ -35,6 +36,6 @@ export default function handler(
   
 }
 
- return useFetch()
+ return LoginFetch()
 
 }

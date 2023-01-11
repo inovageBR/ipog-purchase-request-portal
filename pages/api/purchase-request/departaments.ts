@@ -7,18 +7,20 @@ export default function handler(
   res: NextApiResponse<any>,
 ) {
 
-  const useDepartamentsFetch = async (id: any) => {
+  const DepartamentsFetch = async (id: any) => {
     const response = await fetch({
       path: `/Departments(${id})`,
       headers: {
         Cookie: `B1SESSION=${req.cookies['B1SESSION']}`
       }
+    }).catch((error) => {
+      return res.status(error.response.status).json(error.response.data)
     })
-  
-    return res.json(response.data)
+
+    return res.status(200).json(response?.data)
 }
   
   const { id } = req.query
 
-  return useDepartamentsFetch(id)
+  return DepartamentsFetch(id)
 }

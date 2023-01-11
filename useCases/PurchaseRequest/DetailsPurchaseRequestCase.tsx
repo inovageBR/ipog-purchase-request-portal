@@ -1,5 +1,5 @@
 import { useNoAuthorized } from "@/hooks/useNoAuthorized"
-import { getPurchaseRequestsDetails } from "@/services/purchase-request/usePurchaseRequest"
+import { getDepartments, getPurchaseRequestsDetails } from "@/services/purchase-request/usePurchaseRequest"
 import { useStoreListToast } from "@/store/useStoreListToast"
 import { useStoreLoading } from "@/store/useStoreLoading"
 import { Table } from "@/useComponents/Table"
@@ -12,10 +12,42 @@ import { useEffect, useState } from "react"
 export const DetailsPurchaseRequestCase = () => {
 
   const router = useRouter()
+  const { id } = router.query
+
   const { addToast } = useStoreListToast()
   const [detailsPurchaseRequest, setDetailsPurchaseRequest] = useState<any>()
+  const [department, setDepartment] = useState<any>('')
 
   const { setLoading } = useStoreLoading()
+
+  const GET_DEPARTMENT = (id: any) => {
+    getDepartments(id).then((response) => {
+      setLoading(true)
+      const { data } = response
+      const department = 
+        {
+          label: data.Name
+        }
+
+        setDepartment(department)
+      
+      return response
+    
+    }).catch((error) => {
+      const { status: responseStatus, statusText } = error.response
+
+      addToast({
+        type: 'error',
+        title: `Error ${responseStatus}`,
+        message: `Erro ao buscar departamentos, ${statusText}`,
+        duration: 8000
+      })
+
+      useNoAuthorized(responseStatus)
+    }).finally(() => {
+      setLoading(false)
+    })
+  }
 
   const headers = [
     {
@@ -31,20 +63,8 @@ export const DetailsPurchaseRequestCase = () => {
       fn: () => console.log('Descrição do item')
     },
     {
-      title: 'Unidade de medida',
-      fn: () => console.log('Unidade de medida')
-    },
-    {
       title: 'Quantidade',
       fn: () => console.log('Quantidade')
-    },
-    {
-      title: 'Centro de Custo 1',
-      fn: () => console.log('Cancelado')
-    },
-    {
-      title: 'Centro de Custo 2',
-      fn: () => console.log('Cancelado')
     },
     {
       title: 'Projeto',
@@ -57,10 +77,9 @@ export const DetailsPurchaseRequestCase = () => {
     return date.split('T')[0]
   }
 
-  const GET_PURCHASE_REQUEST_DETAILS = (id: any) => {
-    setLoading(true)
-
+  const GET_PURCHASE_REQUEST_DETAILS = (id: any) => {   
     getPurchaseRequestsDetails(id).then((response) => {
+      setLoading(true)
 
       const adpterPurchaseRequestsDetails = {
           affiliate: response.data?.BPLName,
@@ -76,9 +95,11 @@ export const DetailsPurchaseRequestCase = () => {
           requriedDate: response.data?.RequriedDate,
           taxDate: response.data?.TaxDate,
 
-        }
-
+      }
+      
       setDetailsPurchaseRequest(adpterPurchaseRequestsDetails)
+
+      GET_DEPARTMENT(response.data?.RequesterDepartment)
       
       return response
     }).catch((error) => {
@@ -97,14 +118,11 @@ export const DetailsPurchaseRequestCase = () => {
     })
   }
 
-  
-  
-  
-
   useEffect(() => {
-    const { id } = router.query
-    GET_PURCHASE_REQUEST_DETAILS(id)
-  }, [])
+    if (id) {
+      GET_PURCHASE_REQUEST_DETAILS(id)
+    }
+  }, [id])
 
 
 
@@ -118,8 +136,8 @@ export const DetailsPurchaseRequestCase = () => {
           </h2>
           <div className="flex items-center gap-4">
             <InputText label="Solicitante" name={'requesterName'} value={detailsPurchaseRequest.requesterName} readOnly   />
-            <InputText label="Departamento" name={'departament'} value={detailsPurchaseRequest.requesterDepertment} readOnly />
-            <InputText label="Filial" name={'fileia'} value={detailsPurchaseRequest.affiliate} readOnly />
+            <InputText label="Departamento" name={'departament'} value={department?.label} readOnly />
+            <InputText label="Filial" className="w-144" name={'fileia'} value={detailsPurchaseRequest.affiliate} readOnly />
           </div>
           <div className="flex items-center gap-4">
             <InputDate label="Data de Lançamento" name={'TaxDate'} value={filterData(detailsPurchaseRequest.taxDate)} readOnly/>
@@ -141,23 +159,20 @@ export const DetailsPurchaseRequestCase = () => {
               {itemsRequest.ItemCode}
               </td>
               <td className="p-3 text-left" >
-                {itemsRequest.Item}
+                {itemsRequest.Item || 'Nome não retornado'}
               </td>
               <td className="p-3 text-left">
                 {itemsRequest.ItemDescription}
               </td>
               <td className="p-3 text-left">
-                {itemsRequest.MeasureUnit}
-              </td>
-              <td className="p-3 text-left">
                 {itemsRequest.Quantity}
               </td>
-              <td className="p-3 text-left">
+              {/* <td className="p-3 text-left">
                 {itemsRequest.CostingCode}
               </td>
               <td className="p-3 text-left">
                 {itemsRequest.CostingCode2}
-              </td>
+              </td> */}
               <td className="p-3 text-left">
                 {itemsRequest.ProjectCode}
               </td>

@@ -6,22 +6,20 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>,
 ) {
-  const usePurchaseRequestsCancelFetch = async (id: any) => {
+  const PurchaseRequestsCancelFetch = async (id: any) => {
     const response = await fetch({
       path: `/PurchaseRequests(${id})/Cancel`,
       headers: {
         Cookie: `B1SESSION=${req.cookies['B1SESSION']}`
       }
+    }).catch((error) => {
+      return res.status(error.response.status).json(error.response.data)
     })
-   // return error if response is not ok
-    if (response.status !== 200) {
-      return res.status(response.status).json(response.data)
-    }
-
-    return res.status(200).json(response.data)
+    
+    return res.status(200).json(response?.data)
 
 }
   const { id } = req.query
 
-  return usePurchaseRequestsCancelFetch(id)
+  return PurchaseRequestsCancelFetch(id)
 }

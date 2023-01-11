@@ -3,6 +3,7 @@ import { Table } from "@/useComponents/Table"
 import { useEffect, useState } from "react"
 import { getPurchaseRequests, postPurchaseRequestsCancel  } from "@/services/purchase-request/usePurchaseRequest"
 import { formatDepartament, formatStatus, formatCanceled } from '@/utils/formatData'
+import { useDebounce } from 'usehooks-ts'
 
 import { useNoAuthorized } from "@/hooks/useNoAuthorized"
 import { ButtonIcon } from "@/usePieces/ButtonIcon"
@@ -18,10 +19,21 @@ export const PurchaseRequestCase = () => {
   const { setLoading } = useStoreLoading()
   const [currentPage, setCurrentPage] = useState(1)
   const [purchaseRequests, setPurchaseRequests] = useState<any>([])
+  const [isPagination, setIsPagination] = useState(false)
+  const [orderby, setOrderby] = useState('DocNum asc')
+  const [filter, setFilter] = useState('')
+  const debouncedValue = useDebounce<string>(filter, 800)
 
-  const GET_PURCHASEREQUESTS = () => {
-    getPurchaseRequests().then((response) => {
+  const GET_PURCHASEREQUESTS = ({
+    skip,
+    orderby,
+    filter
+  }: any) => {
+    getPurchaseRequests(skip, orderby, filter).then((response) => {
       setLoading(true)
+
+      console.log(orderby, 'ORDERBY')
+
       const adpterPurchaseRequests = response.data.value.map((purchaseRequest: any) => {
         return {
           cancelled: purchaseRequest?.Cancelled,
@@ -34,6 +46,12 @@ export const PurchaseRequestCase = () => {
       })
 
       setPurchaseRequests(adpterPurchaseRequests)
+
+      if (!!!response.data['@odata.nextLink']) {
+        setIsPagination(true)
+      } else {
+        setIsPagination(false)
+      }
       
       return response
     }).catch((error) => {
@@ -57,7 +75,7 @@ export const PurchaseRequestCase = () => {
     postPurchaseRequestsCancel(docentry).then((response) => {
       setLoading(true)
 
-      if (response.status === 204) {
+      if (response.status === 200) {
         addToast({
           type: 'success',
           title: `Solicitação de compra`,
@@ -65,15 +83,15 @@ export const PurchaseRequestCase = () => {
           duration: 8000
         })
   
-        GET_PURCHASEREQUESTS()
+        handleCurrentPage(1)
       }
     }).catch((error) => {
-      const { status: responseStatus, statusText } = error.response
+      const { status: responseStatus, data  } = error.response
 
       addToast({
         type: 'error',
         title: `Error ${responseStatus}`,
-        message: `Erro ao cancelar solicitação de compra, ${statusText}`,
+        message: `Erro ao cancelar solicitação de compra, ${data?.error?.message}`,
         duration: 8000
       })
 
@@ -86,37 +104,82 @@ export const PurchaseRequestCase = () => {
   const headers = [
     {
       title: 'N° documento',
-      fn: () => console.log('N° documento')
+      fn: () => {
+        if (orderby === 'DocEntry asc') {
+          setOrderby('DocEntry desc')
+          
+        } else {
+          setOrderby('DocEntry asc')
+          
+        }
+        handleCurrentPage(1)
+      }
     },
     {
       title: 'Responsável',
-      fn: () => console.log('Responsável')
+      fn: () => {
+        if (orderby === 'RequesterName asc') {
+          setOrderby('RequesterName desc')
+          
+        } else {
+          setOrderby('RequesterName asc')
+          
+        }
+        handleCurrentPage(1)
+      }
     },
     {
       title: 'Departamento',
-      fn: () => console.log('Departamento')
+      fn: () => {
+        if(orderby === 'RequesterDepartment asc') {
+          setOrderby('RequesterDepartment desc')
+
+        } else {
+          setOrderby('RequesterDepartment asc')
+
+        }
+        handleCurrentPage(1)
+      }
     },
     {
       title: 'Assunto',
-      fn: () => console.log('Assunto')
+      fn: () => {
+        if(orderby === 'DocEntry asc') {
+          setOrderby('DocEntry desc')
+
+        } else {
+          setOrderby('DocEntry asc')
+
+        }
+        handleCurrentPage(1)
+      }
     },
     {
       title: 'Status',
-      fn: () => console.log('Status')
     },
     {
       title: 'Cancelado',
-      fn: () => console.log('Cancelado')
+      fn: () => {
+        if (orderby === 'Cancelled asc') {
+          setOrderby('Cancelled desc')
+
+        } else {
+          setOrderby('Cancelled asc')
+        }
+        handleCurrentPage(1)
+      }
     },
     {
-      title: 'Ações',
-      fn: () => console.log('Cancelado')
+      title: 'Ações'
     },
   ]
 
 
   useEffect(() => {
-    GET_PURCHASEREQUESTS()
+    GET_PURCHASEREQUESTS({
+      skip: 0,
+      orderby: 'DocNum asc'
+    })
     
   }, [])
 
@@ -128,17 +191,40 @@ export const PurchaseRequestCase = () => {
     const { value } = event.target
 
     if (value) {
-      const filterPurchaseRequests = purchaseRequests.filter((purchaseRequest: any) => {
-        return purchaseRequest?.docnum === Number(value)
-      })
-
-      setPurchaseRequests(filterPurchaseRequests)
+      setFilter(value)
     }
-
     if (!value) {
-      GET_PURCHASEREQUESTS()
+      handleCurrentPage(1)
     }
   }
+
+  useEffect(() => {
+    console.log(currentPage, 'CURRENT DO EFFECT')
+    if (currentPage > 1) {
+      GET_PURCHASEREQUESTS({
+        skip: (currentPage - 1) * 20,
+        orderby,
+        filter
+      })
+    } else {
+      GET_PURCHASEREQUESTS({
+        skip: 0,
+        orderby,
+        filter
+      })
+    }
+  }, [currentPage, orderby])
+
+  useEffect(() => {
+    if (debouncedValue) {
+      GET_PURCHASEREQUESTS({
+        skip: 0,
+        orderby: 'DocNum asc',
+        filter: `DocNum eq ${debouncedValue}`
+      })
+    }
+
+  }, [debouncedValue])
 
   const handleInsertPurchaseRequest = () => {
     router.push('/purchase-request/insert-purchase-request')
@@ -193,7 +279,7 @@ export const PurchaseRequestCase = () => {
           </tr>
         ): null}
       </Table>
-      <Pagination currentPage={currentPage} totalPages={10} onChangePage={handleCurrentPage} />
+      <Pagination isNextPage={isPagination} currentPage={currentPage} totalPages={20} onChangePage={handleCurrentPage} />
     </>
   )
 }

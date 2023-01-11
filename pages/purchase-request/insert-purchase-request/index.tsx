@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import DefaultLayout from '@/layouts/DefaultLayout'
-import { InsertPurchaseRequestCase } from '@/useCases/purchaseRequestCase'
+import { InsertPurchaseRequestCase } from '@/useCases/PurchaseRequest/InsertPurchaseRequestCase'
 
-const PurchaseRequest: NextPage = () => {
+const InsertPurchaseRequest: NextPage = () => {
   return (
     <>
       <DefaultLayout title='Inserir solicitação de compra'>
@@ -12,4 +12,4 @@ const PurchaseRequest: NextPage = () => {
   )
 }
 
-export default PurchaseRequest
+export default InsertPurchaseRequest

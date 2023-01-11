@@ -6,16 +6,17 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>,
 ) {
-  const useEmployeesFetch = async () => {
+  const EmployeesFetch = async () => {
     const response = await fetch({
       path: '/EmployeesInfo',
       headers: {
         Cookie: `B1SESSION=${req.cookies['B1SESSION']}`
       }
+    }).catch((error) => {
+      return res.status(error.response.status).json(error.response.data)
     })
-    
-  
-  return res.json(response.data)
+
+    return res.status(200).json(response?.data)
 }
-  return useEmployeesFetch()
+  return EmployeesFetch()
 }

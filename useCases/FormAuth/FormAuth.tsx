@@ -50,7 +50,7 @@ export const FormAuth = () => {
               onChange={({ target }) =>
                 setUserInfo({ ...userInfo, password: target.value })
               }
-              type="text"
+              type="password"
             />
           </div>
           <div className="flex gap-2 w-full justify-center items-center">

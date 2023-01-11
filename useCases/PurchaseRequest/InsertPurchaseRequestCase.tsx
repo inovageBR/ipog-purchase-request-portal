@@ -127,13 +127,6 @@ export const InsertPurchaseRequestCase = () => {
     POST_PURCHASE_REQUEST(data)
   }
 
-  // const handlerRemoveItem = (index: number) => {
-  //   console.log(index)
-  //   itemsRequest.splice(index, 1)
-  //   console.log(itemsRequest)
-  //   setItemsRequest(itemsRequest)
-  // }
-
   const handlerRemoveItemTable = (index: any) => {
     const items = itemsRequest.filter((item: any, i: any) => i !== index)
     setItemsRequest(items)

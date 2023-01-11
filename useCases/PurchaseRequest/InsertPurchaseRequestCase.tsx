@@ -8,11 +8,13 @@ import { postPurchaseRequests } from "@/services/purchase-request/usePurchaseReq
 import { useStoreListToast } from "@/store/useStoreListToast"
 import { useStoreLoading } from "@/store/useStoreLoading"
 import { ButtonIcon } from "@/usePieces/ButtonIcon"
+import { useRouter } from 'next/router';
 
 export const InsertPurchaseRequestCase = () => {
 
   const { addToast } = useStoreListToast()
   const { setLoading } = useStoreLoading()
+  const router = useRouter();
   
   const [itemsRequest, setItemsRequest] = useState<any>([])
 
@@ -40,6 +42,7 @@ export const InsertPurchaseRequestCase = () => {
           duration: 8000,
           type: 'success'
         })
+        router.push('/purchase-request')
       }
 
     }).catch((error) => {
